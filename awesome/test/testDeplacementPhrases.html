@@ -1,0 +1,125 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>TESTS: Deplacement de phrases</title>
+ 
+  <link rel="stylesheet" href="qunit-1.14.0.css">
+  <script src="qunit-1.14.0.js"></script>
+  <script src="../src/script/contributions-diff.js"></script>
+ 
+  <script>
+  
+	var text1 = "Ed ut perspiciatis, unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam eaque ipsa, quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt, explicabo. Nemo enim ipsam voluptatem, quia voluptas sit, aspernatur aut odit aut fugit, sed quia consequuntur magni dolores eos, qui ratione voluptatem sequi nesciunt, neque porro quisquam est, qui dolorem ipsum, quia dolor sit amet consectetur adipisci[ng] velit, sed quia non numquam [do] eius modi tempora inci[di]dunt, ut labore et dolore magnam aliquam quaerat voluptatem. Ut enim ad minima veniam, quis nostrum exercitationem ullam corporis suscipit laboriosam, nisi ut aliquid ex ea commodi consequatur? Quis autem vel eum iure reprehenderit, qui in ea voluptate velit esse, quam nihil molestiae consequatur, vel illum, qui dolorem eum fugiat, quo voluptas nulla pariatur?";
+	var text2 = "Ed ut perspiciatis, unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam eaque ipsa, quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt, explicabo. Quis autem vel eum iure reprehenderit, qui in ea voluptate velit esse, quam nihil molestiae consequatur, vel illum, qui dolorem eum fugiat, quo voluptas nulla pariatur? Ut enim ad minima veniam, quis nostrum exercitationem ullam corporis suscipit laboriosam, nisi ut aliquid ex ea commodi consequatur? Nemo enim ipsam voluptatem, quia voluptas sit, aspernatur aut odit aut fugit, sed quia consequuntur magni dolores eos, qui ratione voluptatem sequi nesciunt, neque porro quisquam est, qui dolorem ipsum, quia dolor sit amet consectetur adipisci[ng] velit, sed quia non numquam [do] eius modi tempora inci[di]dunt, ut labore et dolore magnam aliquam quaerat voluptatem.";
+	var text3 = "Ed ut perspiciatis, unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam eaque ipsa, quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt, explicabo. Ut enim ad minima veniam, quis nostrum exercitationem ullam corporis suscipit laboriosam, nisi ut aliquid ex ea commodi consequatur? Quis autem vel eum iure reprehenderit, qui in ea voluptate velit esse, quam nihil molestiae consequatur, vel illum, qui dolorem eum fugiat, quo voluptas nulla pariatur? La maison est bleu. Le chien est brun. Le Soleil est Jaune. Pavillon Président-Kennedy.";
+	var text4 = "Le chien est brun. La maison est bleu. Ed ut perspiciatis, unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam eaque ipsa, quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt, explicabo. Nemo enim ipsam voluptatem, quia voluptas sit, aspernatur aut odit aut fugit, sed quia consequuntur magni dolores eos, qui ratione voluptatem sequi nesciunt, neque porro quisquam est, qui dolorem ipsum, quia dolor sit amet consectetur adipisci[ng] velit, sed quia non numquam [do] eius modi tempora inci[di]dunt, ut labore et dolore magnam aliquam quaerat voluptatem. Ut enim ad minima veniam, quis nostrum exercitationem ullam corporis suscipit laboriosam, nisi ut aliquid ex ea commodi consequatur? Quis autem vel eum iure reprehenderit, qui in ea voluptate velit esse, quam nihil molestiae consequatur, vel illum, qui dolorem eum fugiat, quo voluptas nulla pariatur?";
+
+	var phrases1 = getSentences(text1);
+	var phrases2 = getSentences(text2);
+	var phrases3 = getSentences(text3);
+	var phrases4 = getSentences(text4);
+
+	test("Test de la fonction matchPhrases()", function() {
+		//2 phrases egales, retourne tableau vide
+		equal(matchPhrases(phrases1, phrases1).length, 0);
+		
+		//Test, texts contient deux texte avec une difference, les textes ont la meme longueur
+		var diffs = matchPhrases(phrases1, phrases2);
+		equal(diffs.length, 2, "Textes 1 difference");
+		equal(diffs[0].index1, 1);
+		equal(diffs[0].index2, 3);
+		equal(diffs[1].index1, 3);
+		equal(diffs[1].index2, 1);
+		
+		//Test, avec des texts nulls, retourne tableau vide.
+		diffs = matchPhrases(null, null);
+		equal(diffs.length, 0);
+		
+		//Test avec des une suppression, un déplacement et 4 ajout.
+		diffs = matchPhrases(phrases1, phrases3);
+		equal(diffs.length, 2);
+		equal(diffs[0].index1, 2);
+		equal(diffs[0].index2, 1);
+		equal(diffs[1].index1, 3);
+		equal(diffs[1].index2, 2);
+		
+		//Test avec des une 2 ajouts au debut
+		diffs = matchPhrases(phrases1, phrases4);
+		equal(diffs.length, 4);
+		equal(diffs[0].index1, 0);
+		equal(diffs[0].index2, 2);
+		equal(diffs[1].index1, 1);
+		equal(diffs[1].index2, 3);
+		equal(diffs[2].index1, 2);
+		equal(diffs[2].index2, 4);
+		equal(diffs[3].index1, 3);
+		equal(diffs[3].index2, 5);
+	});
+	
+	test("Test de la fonction detecterDeplacement()", function() {
+		//Detecter d'un deplacement de base
+		equal(detecteDeplacement(phrases1, phrases2, 1 ,3), true);
+		//Detecter d'un deplacement de base
+		equal(detecteDeplacement(phrases2, phrases1, 3 ,1), true);
+		
+		//Ne pas detecter une phrase au meme endroit.
+		equal(detecteDeplacement(phrases1, phrases2, 0 , 0), false);
+		
+		//false si un des string est null
+		equal(detecteDeplacement(phrases1, null, 0 , 1), false);
+		equal(detecteDeplacement(null, phrases1, 0 , 1), false);
+		equal(detecteDeplacement(null, null, 0 , 1), false);
+	});
+	
+	test("Test de la fonction detecteDeplacementsDansTextes()", function() {
+		//2 phrases egales, retourne tableau vide
+		var deplacements = detecteDeplacementsDansTextes(text1, text1);
+		equal(deplacements.indexesTexte1.length, 0);
+		equal(deplacements.indexesTexte2.length, 0);
+		
+		//Test, texts contient deux texte avec une difference, les textes ont la meme longueur
+		deplacements = detecteDeplacementsDansTextes(text1, text2);
+		equal(deplacements.indexesTexte1.length, 2);
+		equal(deplacements.indexesTexte2.length, 2);
+		equal(deplacements.indexesTexte1[0], 1);
+		equal(deplacements.indexesTexte2[0], 3);
+		equal(deplacements.indexesTexte1[1], 3);
+		equal(deplacements.indexesTexte2[1], 1);
+		
+		//Test, avec des texts nulls, retourne tableau vide.
+		deplacements = detecteDeplacementsDansTextes(null, null);
+		equal(deplacements.indexesTexte1.length, 0);
+		equal(deplacements.indexesTexte2.length, 0);
+		
+		//Test avec des une suppression, un déplacement et 4 ajout.
+		deplacements = detecteDeplacementsDansTextes(text1, text3);
+		equal(deplacements.indexesTexte1.length, 2);
+		equal(deplacements.indexesTexte2.length, 2);
+		equal(deplacements.indexesTexte1[0], 2);
+		equal(deplacements.indexesTexte2[0], 1);
+		equal(deplacements.indexesTexte1[1], 3);
+		equal(deplacements.indexesTexte2[1], 2);
+		
+		//Test avec des une 2 ajouts au debut
+		deplacements = detecteDeplacementsDansTextes(text1, text4);
+		equal(deplacements.indexesTexte1.length, 4);
+		equal(deplacements.indexesTexte2.length, 4);
+		equal(deplacements.indexesTexte1[0], 0);
+		equal(deplacements.indexesTexte2[0], 2);
+		equal(deplacements.indexesTexte1[1], 1);
+		equal(deplacements.indexesTexte2[1], 3);
+		equal(deplacements.indexesTexte1[2], 2);
+		equal(deplacements.indexesTexte2[2], 4);
+		equal(deplacements.indexesTexte1[3], 3);
+		equal(deplacements.indexesTexte2[3], 5);
+	});
+
+  </script>
+</head>
+<body>
+ 
+<div id="qunit"></div>
+ 
+</body>
+</html>
