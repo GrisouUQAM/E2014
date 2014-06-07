@@ -95,6 +95,7 @@ function callback_Q2(response) {
                        '<div class="list_talks_item_comment">' + usercontribs[i].comment + '</div></div>';
       /*
       * equipe piccolo
+      *
       */
       tableau_talks.push(usercontribs[i].title);
       tableau_talks_comment.push(usercontribs[i].comment);
