@@ -2,7 +2,13 @@
 // Revision ETE 2014 GF
 var oldText, newText, wiki, analysisTable, url, user, activeAjaxConnections = 0,
 tabSelected = "Articles";
-
+/*
+* equipe piccolo
+*/
+var tableau_talks = [];
+var tableau_talks_comment = [];
+var size = -1;
+// fin de l"ajout
 function clearScreen() {
   if(tabSelected === "Articles"){
     $("#articles").html("");
@@ -87,6 +93,12 @@ function callback_Q2(response) {
       html_list_talks += '<div class="list_talks_item">' +
                        '<div class="list_talks_item_title">' + usercontribs[i].title + '</div>' +
                        '<div class="list_talks_item_comment">' + usercontribs[i].comment + '</div></div>';
+      /*
+      * equipe piccolo
+      */
+      tableau_talks.push(usercontribs[i].title);
+      tableau_talks_comment.push(usercontribs[i].comment);
+      // fin de l'ajout
     }
     stopLoading();
     $("#talks").html(html_list_talks);
@@ -175,10 +187,14 @@ function getJsonWiki() {
   }
   if(tabSelected === "Articles")
   {
+    /*
+    * equipe Piccolo
+    */
     doGet(wikiUrl, "Q1");
     var jsonurlTalk = wiki + "/w/api.php?action=query&list=usercontribs&format=json&uclimit=500&ucuser=" + user +
       "&ucdir=older&ucnamespace=1&ucprop=title%7Ccomment%7Cparsedcomment";
     doGet(jsonurlTalk, "Q2");
+    //fin de l'ajout
   }
 }
 
@@ -254,13 +270,23 @@ $(document).ready(function () {
   });
 });
 
+/*
+  Equipe piccolo
+*/
 function ifContributeInArticleForTalk(item){
-  var title = $(item).find(".list_articles_item_title").text();
-  console.log(title);
+    var talk = "Talk:" + item;
+    size = 0;
+  for(var i = 0; i < tableau_talks.length; i++) {
+        if(talk == tableau_talks[i]){
+          size = i;
+          return true;
+        }
+  }
+  return false;
 }
+//fin de l'ajout
 
 function getArticle(item) {
-  var talk = ifContributeInArticleForTalk($(item));
   var article = "";
   loading();
   var title = $(item).find(".list_articles_item_title").text();
@@ -268,6 +294,13 @@ function getArticle(item) {
   var revid = $(item).find(".list_articles_item_revid").val();
   var oldRevisionContent = wiki + "/w/api.php?action=parse&format=json&oldid=" + parentid + "&prop=text";
   var userRevisionContent = wiki + "/w/api.php?action=parse&format=json&oldid=" + revid + "&prop=text";
+  var talkContribute = ifContributeInArticleForTalk(title);
+  //equipe piccolo
+  if(!talkContribute)
+    $("#talk").html("PAS DE CONTRIBUTION");
+  else
+     $("#talk").html(tableau_talks_comment[size]);
+   //fin de l'ajout
   $.when(
     $.ajax({
       beforeSend: function (xhr) {
