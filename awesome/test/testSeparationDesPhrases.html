@@ -1,0 +1,105 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>TESTS: Separer un texte en phrase.</title>
+ 
+  <link rel="stylesheet" href="qunit-1.14.0.css">
+  <script src="qunit-1.14.0.js"></script>
+  <script src="../src/script/contributions-diff.js"></script>
+ 
+  <script>
+  var text1 = "La maison est bleu.";
+  var text2 = "La maison est bleu. Le chien est vert.";
+  var text3 = "Ed ut perspiciatis, unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam eaque ipsa, quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt, explicabo. Nemo enim ipsam voluptatem, quia voluptas sit, aspernatur aut odit aut fugit, sed quia consequuntur magni dolores eos, qui ratione voluptatem sequi nesciunt, neque porro quisquam est, qui dolorem ipsum, quia dolor sit amet consectetur adipisci[ng] velit, sed quia non numquam [do] eius modi tempora inci[di]dunt, ut labore et dolore magnam aliquam quaerat voluptatem. Ut enim ad minima veniam, quis nostrum exercitationem ullam corporis suscipit laboriosam, nisi ut aliquid ex ea commodi consequatur? Quis autem vel eum iure reprehenderit, qui in ea voluptate velit esse, quam nihil molestiae consequatur, vel illum, qui dolorem eum fugiat, quo voluptas nulla pariatur?";
+  
+  
+  test("getSentences(text) tests", function() {
+	equal(getSentences(text1).length, 1);
+	equal(getSentences(text2).length, 2);
+	equal(getSentences(text3).length, 4);
+	
+	//Test si le tableau contient les bonnes choses.
+	var array = getSentences(text3);
+	equal(array[0], "Ed ut perspiciatis, unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam eaque ipsa, quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt, explicabo.");
+	equal(array[1], "Nemo enim ipsam voluptatem, quia voluptas sit, aspernatur aut odit aut fugit, sed quia consequuntur magni dolores eos, qui ratione voluptatem sequi nesciunt, neque porro quisquam est, qui dolorem ipsum, quia dolor sit amet consectetur adipisci[ng] velit, sed quia non numquam [do] eius modi tempora inci[di]dunt, ut labore et dolore magnam aliquam quaerat voluptatem.");
+	equal(array[2], "Ut enim ad minima veniam, quis nostrum exercitationem ullam corporis suscipit laboriosam, nisi ut aliquid ex ea commodi consequatur?");
+	equal(array[3], "Quis autem vel eum iure reprehenderit, qui in ea voluptate velit esse, quam nihil molestiae consequatur, vel illum, qui dolorem eum fugiat, quo voluptas nulla pariatur?");
+	
+	//Test fin de phrase avec ?
+	var text = "La?";
+	equal(getSentences(text)[0], "La?");
+	
+	//Test fin de phrase avec .
+	text = "La.";
+	equal(getSentences(text)[0], "La.");
+	
+	//Test fin de phrase avec !
+	text = "La!";
+	equal(getSentences(text)[0], "La!");
+	
+	//Tests le caractere special *
+	text = "La *."; 
+	equal(getSentences(text)[0], "La *.");
+	
+	//Tests le caractere special _
+	text = "La _."; 
+	equal(getSentences(text)[0], "La _.");
+	
+	//Tests le caractere special :
+	text = "La :."; 
+	equal(getSentences(text)[0], "La :.");
+	
+	//Tests le caractere special (
+	text = "La (."; 
+	equal(getSentences(text)[0], "La (.");
+	
+	//Tests le caractere special )
+	text = "La )."; 
+	equal(getSentences(text)[0], "La ).");
+	
+	//Tests le caractere special [
+	text = "La [."; 
+	equal(getSentences(text)[0], "La [.");
+	
+	//Tests le caractere special ]
+	text = "La ]."; 
+	equal(getSentences(text)[0], "La ].");
+	
+	//Tests le caractere special &
+	text = "La &."; 
+	equal(getSentences(text)[0], "La &.");
+	
+	//Tests le caractere special '
+	text = "La '."; 
+	equal(getSentences(text)[0], "La '.");
+	
+	//Tests le caractere special "
+	text = "La \"."; 
+	equal(getSentences(text)[0], "La \".");
+	
+	//Tests le caractere special &
+	text = "La &."; 
+	equal(getSentences(text)[0], "La &.");
+	
+	//Tests le caractere special %
+	text = "La %."; 
+	equal(getSentences(text)[0], "La %.");
+	
+	//Tests le caractere special #
+	text = "La #."; 
+	equal(getSentences(text)[0], "La #.");
+	
+	//Tests le caractere special @
+	text = "La @."; 
+	equal(getSentences(text)[0], "La @.");
+	
+	});
+  </script>
+</head>
+<body>
+ 
+<div id="qunit"></div>
+ 
+</body>
+</html>
