@@ -132,7 +132,6 @@ function getNextUserContributions(timestamp){
 }
 
 function getJsonWiki() {
-  alert ("fghff");
   clearScreen();
   var uclimitContribution = getUclimitCourrent();
   if ($.trim($("#user").val()).length === 0) {
@@ -255,12 +254,15 @@ $(document).ready(function () {
   });
 });
 
-function talks(item){
+function getTalks(item){
+  var title = $(item).find(".list_articles_item_title").text();
+  console.log(item);
+  var talk = wiki;
   var article = "";
-  loading();
 }
 
 function getArticle(item) {
+  var talk = getTalks($(item));
   var article = "";
   loading();
   var title = $(item).find(".list_articles_item_title").text();
