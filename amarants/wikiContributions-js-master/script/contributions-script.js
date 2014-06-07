@@ -2,7 +2,13 @@
 // Revision ETE 2014 GF
 var oldText, newText, wiki, analysisTable, url, user, activeAjaxConnections = 0,
 tabSelected = "Articles";
-
+/*
+* equipe piccolo
+*/
+var tableau_talks = [];
+var tableau_talks_comment = [];
+var size = -1;
+// fin de l"ajout
 function clearScreen() {
   if(tabSelected === "Articles"){
     $("#articles").html("");
@@ -40,7 +46,6 @@ function loading() {
 
 function callback_Q1(data, continueFlag) {
   var contributions = data.query.usercontribs, totalVal = 0, html_list_articles = "";
-  
   var lastItem = $(".last_item .list_articles_item_pageid").val();
   $(".list_articles_item").removeClass("last_item");
   if(continueFlag){
@@ -69,7 +74,7 @@ function callback_Q1(data, continueFlag) {
       html_list_articles += '<input class="list_articles_item_pageid" type="hidden" value="' + contributions[i].pageid + '"/>' +
         '<input class="list_articles_item_revid" type="hidden" value="' + contributions[i].revid + '"/>' +
         '<input class="list_articles_item_parentid" type="hidden" value="' + contributions[i].parentid + '"/></div>';
-      totalVal += Math.abs(contributions[i].sizediff);/*on recupere nombre des contributions*/
+      totalVal += Math.abs(contributions[i].sizediff);
     }
   }
   $("#total_score_contr").text(totalVal);
@@ -84,9 +89,16 @@ function callback_Q2(response) {
   if (usercontribs.length > 0) {
     var i;
     for (i = 0; i < usercontribs.length; ++i) {
+ 
       html_list_talks += '<div class="list_talks_item">' +
                        '<div class="list_talks_item_title">' + usercontribs[i].title + '</div>' +
                        '<div class="list_talks_item_comment">' + usercontribs[i].comment + '</div></div>';
+      /*
+      * equipe piccolo
+      */
+      tableau_talks.push(usercontribs[i].title);
+      tableau_talks_comment.push(usercontribs[i].comment);
+      // fin de l'ajout
     }
     stopLoading();
     $("#talks").html(html_list_talks);
@@ -96,7 +108,6 @@ function callback_Q2(response) {
 
 function callback_Q3(response) {
   oldText = response.parse.text["*"];
- // console.log("oldText",oldText);
 }
 
 function callback_Q4(response) {
@@ -176,11 +187,14 @@ function getJsonWiki() {
   }
   if(tabSelected === "Articles")
   {
+    /*
+    * equipe Piccolo
+    */
     doGet(wikiUrl, "Q1");
-  }else if(tabSelected === "Talks"){
     var jsonurlTalk = wiki + "/w/api.php?action=query&list=usercontribs&format=json&uclimit=500&ucuser=" + user +
       "&ucdir=older&ucnamespace=1&ucprop=title%7Ccomment%7Cparsedcomment";
     doGet(jsonurlTalk, "Q2");
+    //fin de l'ajout
   }
 }
 
@@ -256,10 +270,34 @@ $(document).ready(function () {
   });
 });
 
+/*
+  Equipe piccolo
+*/
+function ifContributeInArticleForTalk(item){
+    var talk = "Talk:" + item;
+    size = 0;
+  for(var i = 0; i < tableau_talks.length; i++) {
+        if(talk == tableau_talks[i]){
+          size = i;
+          return true;
+        }
+  }
+  return false;
+}
+//fin de l'ajout
+
 function getArticle(item) {
   var article = "";
   loading();
   var title = $(item).find(".list_articles_item_title").text();
+  var talkContribute = ifContributeInArticleForTalk(title);
+  //equipe piccolo
+  if(!talkContribute)
+    $("#talk").html("PAS DE CONTRIBUTION");
+  else
+     $("#talk").html(tableau_talks_comment[size]);
+   //fin de l'ajout
+
   // console.log("titre :" , title);
   //equipe amarants
   // Fonctionnalités 7  264 jusqua 455
@@ -269,9 +307,9 @@ function getArticle(item) {
   if(existeArticle(parentid)  == true){
   
       lectureArticle(parentid);
-	  
-	  
-	  
+    
+    
+    
   
   }else{
      // console.log("parentid :" , parentid);
@@ -284,8 +322,8 @@ function getArticle(item) {
     // console.log("userRevisionContent :" , userRevisionContent);
   
   
-	
-		 
+  
+     
   $.when(
     $.ajax({
       beforeSend: function (xhr) {
@@ -312,18 +350,18 @@ function getArticle(item) {
     article += analysisTable;
     if (activeAjaxConnections === 0) {
       $("#article_head").text("Article: '" + title + "' on " + $("#url").val());
-	
+  
       $("#contr_survived").text("The contribution survived: N/A");
       $("#article").html(analysisTable);
       stopLoading();
     }
   console.log(analysisTable);
      var resultContribution = getvalueContribution(oldText, newText);
-	
-	 
-	saveArticle(title, parentid, article,resultContribution);
-	
-	
+  
+   
+  saveArticle(title, parentid, article,resultContribution);
+  
+  
   });
    
   }
@@ -346,20 +384,20 @@ var tabArticle = [];
 var trouve = false;
 if(localStorage.getItem("listes Article") != null){
     object = JSON.parse(localStorage.getItem("listes Article"));
-	
-		console.log(object);
+  
+    console.log(object);
    
     var lenghtTab = object.tabArticle.length;
-	console.log(lenghtTab);
-	
-	for(var i = 0; i < lenghtTab; i++ ){
-	 
+  console.log(lenghtTab);
+  
+  for(var i = 0; i < lenghtTab; i++ ){
+   
  
   if(object.tabArticle[i].parentid == parentid && !trouve){
   
     trouve = true;
-	//return trouve; 
-	//alert("article  trouvé");
+  //return trouve; 
+  //alert("article  trouvé");
    }
   }
  }
@@ -368,20 +406,20 @@ return trouve;
 /*sauv*/
 
  function saveArticle(title, parentid, article,resultContribution){
- 	var tabArticle = [];	
-	 if(localStorage.getItem("listes Article") == null){
+  var tabArticle = [];  
+   if(localStorage.getItem("listes Article") == null){
  
    
 
-   	var object ={};
-	    object.tabArticle = tabArticle;
+    var object ={};
+      object.tabArticle = tabArticle;
 
    
    var objectArticle={};
-	 objectArticle.title = title;
-	 objectArticle.parentid = parentid;
-	 objectArticle.article = article;
-	 objectArticle.resultContribution = resultContribution;
+   objectArticle.title = title;
+   objectArticle.parentid = parentid;
+   objectArticle.article = article;
+   objectArticle.resultContribution = resultContribution;
    
    
   object.tabArticle[0] = objectArticle;
@@ -393,17 +431,17 @@ return trouve;
  }else{
  
    var objectArticle={};
-	 objectArticle.title = title;
-	 objectArticle.parentid = parentid;
-	 objectArticle.article = article;
-	 objectArticle.resultContribution = resultContribution;
+   objectArticle.title = title;
+   objectArticle.parentid = parentid;
+   objectArticle.article = article;
+   objectArticle.resultContribution = resultContribution;
    
    var object = JSON.parse(localStorage.getItem("listes Article"));
    
     var lenghtTab = object.tabArticle.length;
-	 object.tabArticle[lenghtTab] = objectArticle;
-	 
-	localStorage.setItem("listes Article",JSON.stringify(object));
+   object.tabArticle[lenghtTab] = objectArticle;
+   
+  localStorage.setItem("listes Article",JSON.stringify(object));
  
  }
 }
@@ -412,25 +450,25 @@ return trouve;
 
  function lectureArticle(parentid){
  
- 	var tabArticle = [];
-	
-	 if(typeof localStorage!='undefined' && JSON){
+  var tabArticle = [];
+  
+   if(typeof localStorage!='undefined' && JSON){
    
    var object = JSON.parse(localStorage.getItem("listes Article"));
    
     var lenghtTab = object.tabArticle.length;
-	
-	for(var i = 0; i < lenghtTab; i++ ){
-	 
+  
+  for(var i = 0; i < lenghtTab; i++ ){
+   
  
   if(object.tabArticle[i].parentid == parentid){
   
    // alert("lecture  effectuée");
      title = object.tabArticle[i].title;
-	 // console.log("title recup" +title);
+   // console.log("title recup" +title);
      article = object.tabArticle[i].article;
-	 // console.log("article recup" +article);
-	resultContribution = object.tabArticle[i].resultContribution;
+   // console.log("article recup" +article);
+  resultContribution = object.tabArticle[i].resultContribution;
    }
  }
    //alert("lecture  effectuée");
@@ -439,8 +477,8 @@ return trouve;
 
     if (activeAjaxConnections === 0) {
       $("#article_head").text("Article: '" + title + "' on " + $("#url").val());
-	  
-	   $("#contr_value").text("Levenshtein distance value: " + resultContribution);
+    
+     $("#contr_value").text("Levenshtein distance value: " + resultContribution);
       $("#contr_survived").text("The contribution survived: N/A");
       $("#article").html(article);
      stopLoading();
