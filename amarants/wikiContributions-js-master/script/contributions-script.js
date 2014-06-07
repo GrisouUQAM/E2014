@@ -261,6 +261,7 @@ function getArticle(item) {
   loading();
   var title = $(item).find(".list_articles_item_title").text();
   // console.log("titre :" , title);
+  //equipe amarants
   // Fonctionnalités 7  264 jusqua 455
   var parentid = $(item).find(".list_articles_item_parentid").val();
   //tester article dans local storage

@@ -17,6 +17,7 @@ function getDiff(text1, text2) {
 }
 
 //fonctionnalités 7 ligne 20 a 24
+//equipe amarants
 function getvalueContribution(text1, text2) {
   var dmp = new diff_match_patch();
   var res = dmp.diff_main(strip_tags(text1), strip_tags(text2));

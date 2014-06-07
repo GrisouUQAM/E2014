@@ -290,10 +290,6 @@ function getArticle(item) {
   var article = "";
   loading();
   var title = $(item).find(".list_articles_item_title").text();
-  var parentid = $(item).find(".list_articles_item_parentid").val();
-  var revid = $(item).find(".list_articles_item_revid").val();
-  var oldRevisionContent = wiki + "/w/api.php?action=parse&format=json&oldid=" + parentid + "&prop=text";
-  var userRevisionContent = wiki + "/w/api.php?action=parse&format=json&oldid=" + revid + "&prop=text";
   var talkContribute = ifContributeInArticleForTalk(title);
   //equipe piccolo
   if(!talkContribute)
@@ -301,6 +297,33 @@ function getArticle(item) {
   else
      $("#talk").html(tableau_talks_comment[size]);
    //fin de l'ajout
+
+  // console.log("titre :" , title);
+  //equipe amarants
+  // Fonctionnalités 7  264 jusqua 455
+  var parentid = $(item).find(".list_articles_item_parentid").val();
+  //tester article dans local storage
+  if(typeof localStorage!='undefined' && JSON) { 
+  if(existeArticle(parentid)  == true){
+  
+      lectureArticle(parentid);
+    
+    
+    
+  
+  }else{
+     // console.log("parentid :" , parentid);
+  var revid = $(item).find(".list_articles_item_revid").val();
+  // console.log("revid :" , revid);
+  var oldRevisionContent = wiki + "/w/api.php?action=parse&format=json&oldid=" + parentid + "&prop=text";
+    // console.log("oldRevisionContent :" , oldRevisionContent);
+  
+  var userRevisionContent = wiki + "/w/api.php?action=parse&format=json&oldid=" + revid + "&prop=text";
+    // console.log("userRevisionContent :" , userRevisionContent);
+  
+  
+  
+     
   $.when(
     $.ajax({
       beforeSend: function (xhr) {
@@ -327,9 +350,144 @@ function getArticle(item) {
     article += analysisTable;
     if (activeAjaxConnections === 0) {
       $("#article_head").text("Article: '" + title + "' on " + $("#url").val());
+  
       $("#contr_survived").text("The contribution survived: N/A");
       $("#article").html(analysisTable);
       stopLoading();
     }
+  console.log(analysisTable);
+     var resultContribution = getvalueContribution(oldText, newText);
+  
+   
+  saveArticle(title, parentid, article,resultContribution);
+  
+  
   });
+   
+  }
+     }else alert("localStorage n'est pas supporté");
+  
+  
+  
+  
+  
+  
+ 
+  
+}
+/*verifier existance article*/
+
+
+function existeArticle (parentid){
+
+var tabArticle = [];
+var trouve = false;
+if(localStorage.getItem("listes Article") != null){
+    object = JSON.parse(localStorage.getItem("listes Article"));
+  
+    console.log(object);
+   
+    var lenghtTab = object.tabArticle.length;
+  console.log(lenghtTab);
+  
+  for(var i = 0; i < lenghtTab; i++ ){
+   
+ 
+  if(object.tabArticle[i].parentid == parentid && !trouve){
+  
+    trouve = true;
+  //return trouve; 
+  //alert("article  trouvé");
+   }
+  }
+ }
+return trouve;
+}
+/*sauv*/
+
+ function saveArticle(title, parentid, article,resultContribution){
+  var tabArticle = [];  
+   if(localStorage.getItem("listes Article") == null){
+ 
+   
+
+    var object ={};
+      object.tabArticle = tabArticle;
+
+   
+   var objectArticle={};
+   objectArticle.title = title;
+   objectArticle.parentid = parentid;
+   objectArticle.article = article;
+   objectArticle.resultContribution = resultContribution;
+   
+   
+  object.tabArticle[0] = objectArticle;
+ 
+  
+   localStorage.setItem("listes Article",JSON.stringify(object));
+  
+ 
+ }else{
+ 
+   var objectArticle={};
+   objectArticle.title = title;
+   objectArticle.parentid = parentid;
+   objectArticle.article = article;
+   objectArticle.resultContribution = resultContribution;
+   
+   var object = JSON.parse(localStorage.getItem("listes Article"));
+   
+    var lenghtTab = object.tabArticle.length;
+   object.tabArticle[lenghtTab] = objectArticle;
+   
+  localStorage.setItem("listes Article",JSON.stringify(object));
+ 
+ }
+}
+
+/*lecture*/
+
+ function lectureArticle(parentid){
+ 
+  var tabArticle = [];
+  
+   if(typeof localStorage!='undefined' && JSON){
+   
+   var object = JSON.parse(localStorage.getItem("listes Article"));
+   
+    var lenghtTab = object.tabArticle.length;
+  
+  for(var i = 0; i < lenghtTab; i++ ){
+   
+ 
+  if(object.tabArticle[i].parentid == parentid){
+  
+   // alert("lecture  effectuée");
+     title = object.tabArticle[i].title;
+   // console.log("title recup" +title);
+     article = object.tabArticle[i].article;
+   // console.log("article recup" +article);
+  resultContribution = object.tabArticle[i].resultContribution;
+   }
+ }
+   //alert("lecture  effectuée");
+  
+      
+
+    if (activeAjaxConnections === 0) {
+      $("#article_head").text("Article: '" + title + "' on " + $("#url").val());
+    
+     $("#contr_value").text("Levenshtein distance value: " + resultContribution);
+      $("#contr_survived").text("The contribution survived: N/A");
+      $("#article").html(article);
+     stopLoading();
+    }
+ // alert("afficher a partir du localstorage");
+
+  
+
+   } else alert("localStorage n'est pas supporté");
+
+
 }

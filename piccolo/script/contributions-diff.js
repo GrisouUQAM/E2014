@@ -15,3 +15,12 @@ function getDiff(text1, text2) {
   $("#contr_value").text("Levenshtein distance value: " + dmp.diff_levenshtein(res));
   return dmp.diff_prettyHtml(res);
 }
+//fonctionnalités 7 ligne 20 a 24
+//equipe amarants
+function getvalueContribution(text1, text2) {
+  var dmp = new diff_match_patch();
+  var res = dmp.diff_main(strip_tags(text1), strip_tags(text2));
+  dmp.diff_cleanupSemantic(res);
+ return dmp.diff_levenshtein(res);
+  
+}
