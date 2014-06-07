@@ -83,6 +83,7 @@ function callback_Q2(response) {
   if (usercontribs.length > 0) {
     var i;
     for (i = 0; i < usercontribs.length; ++i) {
+ 
       html_list_talks += '<div class="list_talks_item">' +
                        '<div class="list_talks_item_title">' + usercontribs[i].title + '</div>' +
                        '<div class="list_talks_item_comment">' + usercontribs[i].comment + '</div></div>';
@@ -175,7 +176,6 @@ function getJsonWiki() {
   if(tabSelected === "Articles")
   {
     doGet(wikiUrl, "Q1");
-  }else if(tabSelected === "Talks"){
     var jsonurlTalk = wiki + "/w/api.php?action=query&list=usercontribs&format=json&uclimit=500&ucuser=" + user +
       "&ucdir=older&ucnamespace=1&ucprop=title%7Ccomment%7Cparsedcomment";
     doGet(jsonurlTalk, "Q2");
@@ -254,7 +254,13 @@ $(document).ready(function () {
   });
 });
 
+function ifContributeInArticleForTalk(item){
+  var title = $(item).find(".list_articles_item_title").text();
+  console.log(title);
+}
+
 function getArticle(item) {
+  var talk = ifContributeInArticleForTalk($(item));
   var article = "";
   loading();
   var title = $(item).find(".list_articles_item_title").text();
