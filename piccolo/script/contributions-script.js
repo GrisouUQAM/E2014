@@ -2,7 +2,6 @@
 // Revision ETE 2014 GF
 var oldText, newText, wiki, analysisTable, url, user, activeAjaxConnections = 0,
 tabSelected = "Articles";
-var html_list_talks = "";
 
 function clearScreen() {
   if(tabSelected === "Articles"){
@@ -80,6 +79,7 @@ function callback_Q1(data, continueFlag) {
 
 function callback_Q2(response) {
   var usercontribs = response.query.usercontribs;
+  var html_list_talks = "";
   if (usercontribs.length > 0) {
     var i;
     for (i = 0; i < usercontribs.length; ++i) {
@@ -109,9 +109,7 @@ function doGet(url, query) {
     type: 'GET',
     success: function (response) {
       if (query === "Q1") {
-        html_list_talks = "";
         callback_Q1(response, false);
-        callback_Q2(response);
       } else if (query === "Q2") {
         callback_Q2(response);
       } else if (query === "Q3") {
@@ -178,7 +176,6 @@ function getJsonWiki() {
   if(tabSelected === "Articles")
   {
     doGet(wikiUrl, "Q1");
-  }else if(tabSelected === "Talks"){
     var jsonurlTalk = wiki + "/w/api.php?action=query&list=usercontribs&format=json&uclimit=500&ucuser=" + user +
       "&ucdir=older&ucnamespace=1&ucprop=title%7Ccomment%7Cparsedcomment";
     doGet(jsonurlTalk, "Q2");
@@ -260,7 +257,6 @@ $(document).ready(function () {
 function ifContributeInArticleForTalk(item){
   var title = $(item).find(".list_articles_item_title").text();
   console.log(title);
-  console.log(html_list_talks.length);
 }
 
 function getArticle(item) {
