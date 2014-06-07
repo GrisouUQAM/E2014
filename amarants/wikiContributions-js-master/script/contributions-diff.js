@@ -16,7 +16,7 @@ function getDiff(text1, text2) {
   return dmp.diff_prettyHtml(res);
 }
 
-
+//fonctionnalités 7 ligne 20 a 24
 function getvalueContribution(text1, text2) {
   var dmp = new diff_match_patch();
   var res = dmp.diff_main(strip_tags(text1), strip_tags(text2));
