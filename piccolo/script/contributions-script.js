@@ -132,6 +132,7 @@ function getNextUserContributions(timestamp){
 }
 
 function getJsonWiki() {
+  alert ("fghff");
   clearScreen();
   var uclimitContribution = getUclimitCourrent();
   if ($.trim($("#user").val()).length === 0) {
@@ -253,6 +254,11 @@ $(document).ready(function () {
     }
   });
 });
+
+function talks(item){
+  var article = "";
+  loading();
+}
 
 function getArticle(item) {
   var article = "";
