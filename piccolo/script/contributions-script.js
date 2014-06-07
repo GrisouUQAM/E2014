@@ -2,6 +2,7 @@
 // Revision ETE 2014 GF
 var oldText, newText, wiki, analysisTable, url, user, activeAjaxConnections = 0,
 tabSelected = "Articles";
+var html_list_talks = "";
 
 function clearScreen() {
   if(tabSelected === "Articles"){
@@ -79,10 +80,10 @@ function callback_Q1(data, continueFlag) {
 
 function callback_Q2(response) {
   var usercontribs = response.query.usercontribs;
-  var html_list_talks = "";
   if (usercontribs.length > 0) {
     var i;
     for (i = 0; i < usercontribs.length; ++i) {
+ 
       html_list_talks += '<div class="list_talks_item">' +
                        '<div class="list_talks_item_title">' + usercontribs[i].title + '</div>' +
                        '<div class="list_talks_item_comment">' + usercontribs[i].comment + '</div></div>';
@@ -108,7 +109,9 @@ function doGet(url, query) {
     type: 'GET',
     success: function (response) {
       if (query === "Q1") {
+        html_list_talks = "";
         callback_Q1(response, false);
+        callback_Q2(response);
       } else if (query === "Q2") {
         callback_Q2(response);
       } else if (query === "Q3") {
@@ -254,15 +257,14 @@ $(document).ready(function () {
   });
 });
 
-function getTalks(item){
+function ifContributeInArticleForTalk(item){
   var title = $(item).find(".list_articles_item_title").text();
-  console.log(item);
-  var talk = wiki;
-  var article = "";
+  console.log(title);
+  console.log(html_list_talks.length);
 }
 
 function getArticle(item) {
-  var talk = getTalks($(item));
+  var talk = ifContributeInArticleForTalk($(item));
   var article = "";
   loading();
   var title = $(item).find(".list_articles_item_title").text();
